@@ -1,7 +1,6 @@
 window.addEventListener('DOMContentLoaded', function() {
     'use strict';
 
-    // Timer
     function countTimer(deadline) {
         let timerHours = document.querySelector('#timer-hours'),
             timerMinutes = document.querySelector('#timer-minutes'),
