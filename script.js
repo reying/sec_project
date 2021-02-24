@@ -34,21 +34,40 @@ window.addEventListener('DOMContentLoaded', function() {
 
     countTimer('8 march 2021');
 
+    // scroll
+    const scroll = (item, event) => {
+        event.preventDefault();
+        const idBlock = item.getAttribute('href').substring(1),
+            block = document.getElementById(idBlock);
+
+        block.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+
     // Меню
     const toggleMenu = () => {
 
         const btnMenu = document.querySelector('.menu'),
             menu = document.querySelector('menu'),
-            btnClose = document.querySelector('.close-btn'),
-            menuItems = menu.querySelectorAll('ul>li');
+            menuItems = menu.querySelectorAll('a[href*="#"]');
 
         const handlerMenu = () => {
             menu.classList.toggle('active-menu');
         };
 
         btnMenu.addEventListener('click', handlerMenu);
-        btnClose.addEventListener('click', handlerMenu);
-        menuItems.forEach((el) => el.addEventListener('click', handlerMenu));
+        menu.addEventListener('click', (event) => {
+            let target = event.target;
+            target = target.closest('menu');
+
+            if (target) {
+                menuItems.forEach((item) => {
+                    if (item === event.target) {
+                        handlerMenu();
+                        scroll(item, event);
+                    }
+                });
+            }
+        });
     };
 
     toggleMenu();
@@ -66,15 +85,14 @@ window.addEventListener('DOMContentLoaded', function() {
             popUp.style.display = 'block';
 
             const ascent = () => {
-                idInterval = requestAnimationFrame(ascent);
                 count += 0.02;
                 if (count < 1) {
                     popUp.style.opacity = count;
                 } else {
-                    cancelAnimationFrame(ascent);
+                    clearInterval(idInterval);
                 }
             };
-            if (width >= 768) { idInterval = requestAnimationFrame(ascent); }
+            if (width >= 768) { idInterval = setInterval(ascent); }
         };
 
         popUpBtn.forEach((elem) => elem.addEventListener('click', animate));
@@ -93,22 +111,15 @@ window.addEventListener('DOMContentLoaded', function() {
 
     togglePopUp();
 
-    // scroll btn
-    const scroll = () => {
-        const elements = document.querySelectorAll('a[href*="#"]');
-
-        elements.forEach((elem) => {
-            elem.addEventListener('click', (event) => {
-                event.preventDefault();
-
-                const idBlock = elem.getAttribute('href').substring(1),
-                    block = document.getElementById(idBlock);
-
-                block.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            });
+    // scroll btn img
+    const scrollImg = () => {
+        const btnImg = document.querySelector('main>a[href = "#service-block"]');
+        btnImg.addEventListener('click', (event) => {
+            scroll(btnImg, event);
         });
     };
-    scroll();
+
+    scrollImg();
 
     // Табы
     const tabs = () => {
