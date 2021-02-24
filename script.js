@@ -59,9 +59,25 @@ window.addEventListener('DOMContentLoaded', function() {
             popUpBtn = document.querySelectorAll('.popup-btn'),
             popUpClose = document.querySelector('.popup-close');
 
-        popUpBtn.forEach((elem) => {
-            elem.addEventListener('click', () => popUp.style.display = 'block');
-        });
+        const animate = () => {
+            let count = 0,
+                idInterval;
+
+            popUp.style.display = 'block';
+
+            const ascent = () => {
+                idInterval = requestAnimationFrame(ascent);
+                count += 0.025;
+                if (count < 1) {
+                    popUp.style.opacity = count;
+                } else {
+                    cancelAnimationFrame(ascent);
+                }
+            };
+            idInterval = requestAnimationFrame(ascent);
+        };
+
+        popUpBtn.forEach((elem) => elem.addEventListener('click', animate));
         popUpClose.addEventListener('click', () => popUp.style.display = 'none');
     };
 
