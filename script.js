@@ -84,4 +84,21 @@ window.addEventListener('DOMContentLoaded', function() {
 
     togglePopUp();
 
+    // scroll btn
+    const scroll = () => {
+        const elements = document.querySelectorAll('a[href*="#"]');
+
+        elements.forEach((elem) => {
+            elem.addEventListener('click', (event) => {
+                event.preventDefault();
+
+                const idBlock = elem.getAttribute('href').substring(1),
+                    block = document.getElementById(idBlock);
+
+                block.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    };
+    scroll();
+
 });
