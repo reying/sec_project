@@ -62,19 +62,20 @@ window.addEventListener('DOMContentLoaded', function() {
         const animate = () => {
             let count = 0,
                 idInterval;
+            const width = document.documentElement.clientWidth;
 
             popUp.style.display = 'block';
 
             const ascent = () => {
                 idInterval = requestAnimationFrame(ascent);
-                count += 0.025;
+                count += 0.02;
                 if (count < 1) {
                     popUp.style.opacity = count;
                 } else {
                     cancelAnimationFrame(ascent);
                 }
             };
-            idInterval = requestAnimationFrame(ascent);
+            if (width >= 768) { idInterval = requestAnimationFrame(ascent); }
         };
 
         popUpBtn.forEach((elem) => elem.addEventListener('click', animate));
