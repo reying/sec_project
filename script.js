@@ -18,18 +18,17 @@ window.addEventListener('DOMContentLoaded', function() {
         }
 
         function updateClock() {
-            idInterval = requestAnimationFrame(updateClock);
             let timer = getTimerRemaining();
             timerHours.textContent = (timer.hours < 10) ? `0${timer.hours}` : timer.hours;
             timerMinutes.textContent = (timer.minutes < 10) ? `0${timer.minutes}` : timer.minutes;
             timerSeconds.textContent = (timer.seconds < 10) ? `0${timer.seconds}` : timer.seconds;
 
             if (timer.timeRemaining < 0) {
-                cancelAnimationFrame(idInterval);
+                clearInterval(idInterval);
                 timerHours.textContent = timerMinutes.textContent = timerSeconds.textContent = '00';
             }
         }
-        idInterval = requestAnimationFrame(updateClock);
+        idInterval = setInterval(updateClock);
     }
 
     countTimer('8 march 2021');
