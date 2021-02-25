@@ -46,30 +46,34 @@ window.addEventListener('DOMContentLoaded', function() {
     // Меню
     const toggleMenu = () => {
 
-        const btnMenu = document.querySelector('.menu'),
-            menu = document.querySelector('menu'),
-            menuItems = menu.querySelectorAll('a[href*="#"]');
+        const menu = document.querySelector('menu'),
+            menuItems = menu.querySelectorAll('a[href*="#"]'),
+            body = document.querySelector('body');
 
         const handlerMenu = () => {
             menu.classList.toggle('active-menu');
         };
 
-        btnMenu.addEventListener('click', handlerMenu);
-        menu.addEventListener('click', (event) => {
+        body.addEventListener('click', (event) => {
             let target = event.target;
-            target = target.closest('menu');
 
-            if (target) {
-                menuItems.forEach((item) => {
-                    if (item === event.target) {
-                        if (item.getAttribute('href').substring(1) !== 'close') {
-                            handlerMenu();
-                            scroll(item, event);
-                        } else {
-                            handlerMenu();
+            if (target.closest('.menu')) {
+                handlerMenu();
+            } else {
+                if (target.closest('menu')) {
+                    menuItems.forEach((item) => {
+                        if (item === event.target) {
+                            if (item.getAttribute('href').substring(1) !== 'close') {
+                                handlerMenu();
+                                scroll(item, event);
+                            } else {
+                                handlerMenu();
+                            }
                         }
-                    }
-                });
+                    });
+                } else {
+                    handlerMenu();
+                }
             }
         });
     };
