@@ -62,8 +62,12 @@ window.addEventListener('DOMContentLoaded', function() {
             if (target) {
                 menuItems.forEach((item) => {
                     if (item === event.target) {
-                        handlerMenu();
-                        scroll(item, event);
+                        if (item.getAttribute('href').substring(1) !== 'close') {
+                            handlerMenu();
+                            scroll(item, event);
+                        } else {
+                            handlerMenu();
+                        }
                     }
                 });
             }
@@ -99,8 +103,8 @@ window.addEventListener('DOMContentLoaded', function() {
 
         popUp.addEventListener('click', (event) => {
             let target = event.target;
-
-            if (target.classList.contains('popup-close')) {
+            // if (target.classList.contains('popup-close') || target.classList.contains('form-btn'))
+            if (target.tagName === "BUTTON") {
                 popUp.style.display = 'none';
             } else {
                 target = target.closest('.popup-content');
