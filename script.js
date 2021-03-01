@@ -256,4 +256,75 @@ window.addEventListener('DOMContentLoaded', function() {
     };
 
     slider();
+
+    //калькулятор
+    const calculator = () => {
+        const calc = document.getElementById('calc');
+
+        calc.addEventListener('input', (event) => {
+            if (event.target.tagName === 'INPUT') {
+                event.target.value = event.target.value.replace(/\D/, '');
+            }
+        });
+    };
+
+    calculator();
+
+    // "наша команда"
+    const command = () => {
+        const commandPhoto = document.querySelectorAll('.command__photo'),
+            command = document.getElementById('command');
+
+        command.addEventListener('mouseover', (event) => {
+            if (event.target.classList.contains('command__photo')) {
+                event.target.src = event.target.dataset.img;
+            }
+        });
+
+        command.addEventListener('mouseout', (event) => {
+            if (event.target.classList.contains('command__photo')) {
+                event.target.src = event.target.dataset.img.replace(/\w(?=\.)/, '');
+            }
+        });
+    };
+
+    command();
+
+    const connect = () => {
+        const connect = document.getElementById('connect');
+
+        connect.addEventListener('input', (event) => {
+            const target = event.target;
+            if (target.id === "form2-name" || target.id === "form2-message") {
+                target.value = target.value.replace(/[^а-яё\-\s]/gi, '');
+            } else if (target.id === "form2-email") {
+                target.value = target.value.replace(/[^a-z@\-_.!~*']/gi, '');
+            } else if (target.id === "form2-phone") {
+                target.value = target.value.replace(/[^\d()-]/gi, '');
+            }
+        });
+
+        connect.addEventListener('focusout', (event) => {
+            let target = event.target;
+
+            const correctedValue = (target) => {
+                target.value = target.value.trim();
+                target.value = target.value.replace(/\s{2,}/g, ' ');
+                target.value = target.value.replace(/-{2,}/g, '-');
+
+                target.value = target.value.replace(/^-+/g, '');
+                target.value = target.value.replace(/-+$/g, '');
+                target.value = target.value.trim();
+            };
+
+            correctedValue(target);
+
+            if (target.id === "form2-name") {
+                target.value = target.value.toLowerCase();
+                target.value = target.value.replace(/(\s|^|-)[а-яё]/gi, (match) => match.toUpperCase());
+            }
+        });
+    };
+
+    connect();
 });
