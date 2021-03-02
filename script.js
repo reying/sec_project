@@ -290,21 +290,22 @@ window.addEventListener('DOMContentLoaded', function() {
 
     command();
 
-    const connect = () => {
-        const connect = document.getElementById('connect');
+    // формы (валидация)
+    const validateForms = () => {
+        const body = document.querySelector('body');
 
-        connect.addEventListener('input', (event) => {
+        body.addEventListener('input', (event) => {
             const target = event.target;
-            if (target.id === "form2-name" || target.id === "form2-message") {
+            if (target.classList.contains('form-name') || target.classList.contains('mess')) {
                 target.value = target.value.replace(/[^а-яё\-\s]/gi, '');
-            } else if (target.id === "form2-email") {
+            } else if (target.classList.contains('form-email')) {
                 target.value = target.value.replace(/[^a-z@\-_.!~*']/gi, '');
-            } else if (target.id === "form2-phone") {
+            } else if (target.classList.contains('form-phone')) {
                 target.value = target.value.replace(/[^\d()-]/gi, '');
             }
         });
 
-        connect.addEventListener('focusout', (event) => {
+        body.addEventListener('blur', (event) => {
             let target = event.target;
 
             const correctedValue = (target) => {
@@ -319,12 +320,12 @@ window.addEventListener('DOMContentLoaded', function() {
 
             correctedValue(target);
 
-            if (target.id === "form2-name") {
+            if (target.classList.contains('form-name')) {
                 target.value = target.value.toLowerCase();
                 target.value = target.value.replace(/(\s|^|-)[а-яё]/gi, (match) => match.toUpperCase());
             }
-        });
+        }, true);
     };
 
-    connect();
+    validateForms();
 });
