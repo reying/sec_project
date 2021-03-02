@@ -295,13 +295,29 @@ window.addEventListener('DOMContentLoaded', function() {
                     total = price * typeValue * squareValue * countValue * dayValue;
                 }
 
-                totalValue.textContent = total;
+                return total;
             };
 
             calcBlock.addEventListener('change', (event) => {
                 const target = event.target;
                 if (target.matches('select') || target.matches('input')) {
-                    countSum();
+                    const total = countSum();
+                    let count = (totalValue.textContent) ? +totalValue.textContent : 0,
+                        interval;
+
+                    const animatedTotalValue = () => {
+                        if (count !== total) {
+                            if (count < total) {
+                                if (total - count < 100) { count++; } else { count += 10; }
+                            } else {
+                                if (count - total < 100) { count--; } else { count -= 10; }
+                            }
+                            totalValue.textContent = count;
+                        } else {
+                            clearInterval(interval);
+                        }
+                    };
+                    interval = setInterval(animatedTotalValue, 1);
                 }
             });
 
