@@ -292,7 +292,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 }
 
                 if (typeValue && squareValue) {
-                    total = price * typeValue * squareValue * countValue * dayValue;
+                    total = Math.floor(price * typeValue * squareValue * countValue * dayValue);
                 }
 
                 return total;
@@ -307,6 +307,8 @@ window.addEventListener('DOMContentLoaded', function() {
 
                     const animatedTotalValue = () => {
                         if (count !== total) {
+                            console.log('count:', count);
+                            console.log('total:', total);
                             if (count < total) {
                                 if (total - count < 100) { count++; } else { count += 10; }
                             } else {
@@ -320,7 +322,6 @@ window.addEventListener('DOMContentLoaded', function() {
                     interval = setInterval(animatedTotalValue, 1);
                 }
             });
-
         };
 
         calc(100);
