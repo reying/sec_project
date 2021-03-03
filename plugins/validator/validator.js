@@ -92,9 +92,6 @@ class Validator {
     }
 
     setPattern() {
-        if (!this.pattern.inp) {
-            this.pattern.inp = /^\W+$/;
-        }
         if (!this.pattern.phone) {
             this.pattern.phone = /^\+?[78]([-()]*\d){10}$/;
         }
