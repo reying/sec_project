@@ -396,6 +396,61 @@
         </div>
     </div>
 
+    <script src="./plugins/validator/validator.js"></script>
+    <script>
+        const validFormOne = new Validator({
+                selector: '#form1',
+                pattern: {
+                    inp: /[а-яё\-\s]+/gi,
+                },
+                method: {
+                    'name': [
+                        ['notEmpty'],
+                        ['pattern', 'inp']
+                    ],
+                    'message': [
+                        ['notEmpty'],
+                        ['pattern', 'inp']
+                    ]
+                }
+            }),
+            validFormTwo = new Validator({
+                selector: '#form2',
+                pattern: {
+                    inp: /[а-яё\-\s]+/gi,
+                },
+                method: {
+                    'name': [
+                        ['notEmpty'],
+                        ['pattern', 'inp']
+                    ],
+                    'message': [
+                        ['notEmpty'],
+                        ['pattern', 'inp']
+                    ]
+                }
+            }),
+            validFormThree = new Validator({
+                selector: '#form3',
+                pattern: {
+                    inp: /[а-яё\-\s]+/gi,
+                },
+                method: {
+                    'name': [
+                        ['notEmpty'],
+                        ['pattern', 'inp']
+                    ],
+                    'message': [
+                        ['notEmpty'],
+                        ['pattern', 'inp']
+                    ]
+                }
+            });
+
+        validFormOne.init();
+        validFormTwo.init();
+        validFormThree.init();
+    </script>
     <script src="script.js"></script>
 </body>
 

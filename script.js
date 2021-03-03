@@ -389,7 +389,6 @@ window.addEventListener('DOMContentLoaded', function() {
         body.addEventListener('blur', (event) => {
             let target = event.target;
 
-            // написать ограничение для сработки
             if (target.closest('form')) {
                 const correctedValue = (target) => {
                     target.value = target.value.trim();
@@ -411,5 +410,5 @@ window.addEventListener('DOMContentLoaded', function() {
         }, true);
     };
 
-    validateForms();
+    // validateForms();
 });
