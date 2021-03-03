@@ -298,28 +298,50 @@ window.addEventListener('DOMContentLoaded', function() {
                 return total;
             };
 
-            calcBlock.addEventListener('change', (event) => {
+            calcBlock.addEventListener('input', (event) => {
                 const target = event.target;
                 if (target.matches('select') || target.matches('input')) {
                     const total = countSum();
                     let count = (totalValue.textContent) ? +totalValue.textContent : 0,
                         interval;
 
-                    const animatedTotalValue = () => {
-                        if (count !== total) {
-                            console.log('count:', count);
-                            console.log('total:', total);
-                            if (count < total) {
-                                if (total - count < 100) { count++; } else { count += 10; }
-                            } else {
-                                if (count - total < 100) { count--; } else { count -= 10; }
+                    const debounce = (f, t) => {
+                        return function(args) {
+                            let previousCall = this.lastCall;
+                            this.lastCall = Date.now();
+                            if (previousCall && ((this.lastCall  -  previousCall) <= t)) {
+                                clearTimeout(this.lastCallTimer);
                             }
-                            totalValue.textContent = count;
-                        } else {
-                            clearInterval(interval);
-                        }
+                            this.lastCallTimer = setTimeout(() => f(args), t);
+                        };
                     };
-                    interval = setInterval(animatedTotalValue, 1);
+
+                    const wrapperAnimated = () => {
+                        const animatedTotalValue = () => {
+                            interval = requestAnimationFrame(animatedTotalValue);
+                            if (count !== total) {
+                                if (count < total) {
+                                    if (total - count < 20) {
+                                        count++;
+                                    } else if (total - count < 100) {
+                                        count += 10;
+                                    } else { count += 100; }
+                                } else {
+                                    if (count - total < 20) {
+                                        count--;
+                                    } else if (count - total < 100) {
+                                        count -= 10;
+                                    } else { count -= 100; }
+                                }
+                                totalValue.textContent = count;
+                            } else {
+                                cancelAnimationFrame(interval);
+                            }
+                        };
+                        interval = requestAnimationFrame(animatedTotalValue);
+                    };
+
+                    target.addEventListener('keyup', debounce(wrapperAnimated, 1000));
                 }
             });
         };
@@ -367,21 +389,24 @@ window.addEventListener('DOMContentLoaded', function() {
         body.addEventListener('blur', (event) => {
             let target = event.target;
 
-            const correctedValue = (target) => {
-                target.value = target.value.trim();
-                target.value = target.value.replace(/\s{2,}/g, ' ');
-                target.value = target.value.replace(/-{2,}/g, '-');
+            // написать ограничение для сработки
+            if (target.closest('form')) {
+                const correctedValue = (target) => {
+                    target.value = target.value.trim();
+                    target.value = target.value.replace(/\s{2,}/g, ' ');
+                    target.value = target.value.replace(/-{2,}/g, '-');
 
-                target.value = target.value.replace(/^-+/g, '');
-                target.value = target.value.replace(/-+$/g, '');
-                target.value = target.value.trim();
-            };
+                    target.value = target.value.replace(/^-+/g, '');
+                    target.value = target.value.replace(/-+$/g, '');
+                    target.value = target.value.trim();
+                };
 
-            correctedValue(target);
+                correctedValue(target);
 
-            if (target.classList.contains('form-name')) {
-                target.value = target.value.toLowerCase();
-                target.value = target.value.replace(/(\s|^|-)[а-яё]/gi, (match) => match.toUpperCase());
+                if (target.classList.contains('form-name')) {
+                    target.value = target.value.toLowerCase();
+                    target.value = target.value.replace(/(\s|^|-)[а-яё]/gi, (match) => match.toUpperCase());
+                }
             }
         }, true);
     };
