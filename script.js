@@ -328,15 +328,26 @@ window.addEventListener('DOMContentLoaded', function() {
                                         count++;
                                     } else if (total - count < 100) {
                                         count += 10;
-                                    } else if (total - count < 1000) { count += 100; } else { count += 1000; }
+                                        // } else if (total - count < 1000) { count += 100; 
+                                    } else {
+                                        count += Math.floor((total - count) / 5);
+                                    }
                                 } else {
-                                    if (count - total < 20) {
-                                        count--;
-                                    } else if (count - total < 100) {
-                                        count -= 10;
-                                    } else if (count - total < 1000) { count -= 100; } else { count -= 1000; }
+                                    if (total === 0) {
+                                        count = 0;
+                                    } else {
+                                        if (count - total < 20) {
+                                            count--;
+                                        } else if (count - total < 100) {
+                                            count -= 10;
+                                            // } else if (count - total < 1000) { count -= 100; 
+                                        } else {
+                                            count -= Math.floor((count - total) / 5);
+                                        }
+                                    }
                                 }
                                 totalValue.textContent = count;
+                                console.log(count);
                             } else {
                                 cancelAnimationFrame(interval);
                             }
