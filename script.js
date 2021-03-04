@@ -433,4 +433,57 @@ window.addEventListener('DOMContentLoaded', function() {
     };
 
     validateForms();
+
+    // send-ajax-form
+    const sendForm = () => {
+        const errorMessage = 'Что-то пошло не так',
+            loadMessage = 'Загрузка...',
+            successMessage = 'Спасибо! Мы скоро с вами свяжемся!';
+
+        const formOne = document.getElementById('form1'),
+            formTwo = document.getElementById('form2'),
+            formThree = document.getElementById('form3');
+
+        const statusMessage = document.createElement('div');
+        statusMessage.style.cssText = 'font-size: 2rem;';
+
+        const sendData = (event, form) => {
+            event.preventDefault();
+            form.appendChild(statusMessage);
+
+            const request = new XMLHttpRequest();
+
+            request.addEventListener('readystatechange', () => {
+                statusMessage.textContent = loadMessage;
+
+                if (request.readyState !== 4) { return; }
+
+                if (request.status === 200) {
+                    statusMessage.textContent = successMessage;
+                } else {
+                    statusMessage.textContent = errorMessage;
+                }
+            });
+
+            request.open('POST', './server.php');
+            request.setRequestHeader('Content-type', 'application/json');
+            const formData = new FormData(form);
+            let body = {};
+
+            formData.forEach((val, key) => {
+                body[key] = val;
+            });
+
+            request.send(JSON.stringify(body));
+        };
+
+        formOne.addEventListener('submit', (event) => { sendData(event, formOne); });
+        formTwo.addEventListener('submit', (event) => { sendData(event, formTwo); });
+        formThree.addEventListener('submit', (event) => { sendData(event, formThree); });
+
+    };
+
+    sendForm();
+
+
 });
