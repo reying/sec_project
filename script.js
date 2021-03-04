@@ -108,7 +108,7 @@ window.addEventListener('DOMContentLoaded', function() {
         popUp.addEventListener('click', (event) => {
             let target = event.target;
             // if (target.classList.contains('popup-close') || target.classList.contains('form-btn'))
-            if (target.tagName === "BUTTON") {
+            if (target.classList.contains('popup-close')) {
                 popUp.style.display = 'none';
             } else {
                 target = target.closest('.popup-content');
@@ -398,19 +398,20 @@ window.addEventListener('DOMContentLoaded', function() {
 
         body.addEventListener('input', (event) => {
             const target = event.target;
-            if (target.classList.contains('form-name') || target.classList.contains('mess')) {
-                target.value = target.value.replace(/[^а-яё\-\s]/gi, '');
+            if (target.classList.contains('form-name')) {
+                target.value = target.value.replace(/[^а-яё\s]/gi, '');
             } else if (target.classList.contains('form-email')) {
                 target.value = target.value.replace(/[^a-z@\-_.!~*']/gi, '');
             } else if (target.classList.contains('form-phone')) {
-                target.value = target.value.replace(/[^\d()-]/gi, '');
+                target.value = target.value.replace(/[^\d\+]/gi, '');
+            } else if (target.classList.contains('mess')) {
+                target.value = target.value.replace(/[^а-яё\s\d,.!?;:()]/gi, '');
             }
         });
 
         body.addEventListener('blur', (event) => {
             let target = event.target;
 
-            // написать ограничение для сработки
             if (target.closest('form')) {
                 const correctedValue = (target) => {
                     target.value = target.value.trim();
@@ -426,7 +427,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
                 if (target.classList.contains('form-name')) {
                     target.value = target.value.toLowerCase();
-                    target.value = target.value.replace(/(\s|^|-)[а-яё]/gi, (match) => match.toUpperCase());
+                    target.value = target.value.replace(/(\s|^)[а-яё]/gi, (match) => match.toUpperCase());
                 }
             }
         }, true);
@@ -445,7 +446,7 @@ window.addEventListener('DOMContentLoaded', function() {
             formThree = document.getElementById('form3');
 
         const statusMessage = document.createElement('div');
-        statusMessage.style.cssText = 'font-size: 2rem;';
+        statusMessage.style.cssText = 'font-size: 2rem; color: white;';
 
         const postData = (body, outputData, errorData) => {
             const request = new XMLHttpRequest();
@@ -480,6 +481,9 @@ window.addEventListener('DOMContentLoaded', function() {
                     statusMessage.textContent = errorMessage;
                     console.error(error);
                 });
+
+            const formInputs = form.querySelectorAll('input');
+            formInputs.forEach(item => item.value = '');
         };
 
         formOne.addEventListener('submit', (event) => { sendData(event, formOne); });
