@@ -108,7 +108,7 @@ window.addEventListener('DOMContentLoaded', function() {
         popUp.addEventListener('click', (event) => {
             let target = event.target;
             // if (target.classList.contains('popup-close') || target.classList.contains('form-btn'))
-            if (target.tagName === "BUTTON") {
+            if (target.classList.contains('popup-close')) {
                 popUp.style.display = 'none';
             } else {
                 target = target.closest('.popup-content');
@@ -298,13 +298,14 @@ window.addEventListener('DOMContentLoaded', function() {
                 return total;
             };
 
-            calcBlock.addEventListener('input', (event) => {
-                const target = event.target;
-                if (target.matches('select') || target.matches('input')) {
-                    const total = countSum();
-                    let count = (totalValue.textContent) ? +totalValue.textContent : 0,
-                        interval;
+            let interval;
 
+            const animation = (event) => {
+                const target = event.target;
+                const total = countSum();
+                let count = (totalValue.textContent) ? +totalValue.textContent : 0;
+
+                if (target.matches('select') || target.matches('input')) {
                     const debounce = (f, t) => {
                         return function(args) {
                             let previousCall = this.lastCall;
@@ -317,6 +318,8 @@ window.addEventListener('DOMContentLoaded', function() {
                     };
 
                     const wrapperAnimated = () => {
+                        cancelAnimationFrame(interval);
+                        // clearInterval(interval);
                         const animatedTotalValue = () => {
                             interval = requestAnimationFrame(animatedTotalValue);
                             if (count !== total) {
@@ -325,15 +328,26 @@ window.addEventListener('DOMContentLoaded', function() {
                                         count++;
                                     } else if (total - count < 100) {
                                         count += 10;
-                                    } else { count += 100; }
+                                        // } else if (total - count < 1000) { count += 100; 
+                                    } else {
+                                        count += Math.floor((total - count) / 5);
+                                    }
                                 } else {
-                                    if (count - total < 20) {
-                                        count--;
-                                    } else if (count - total < 100) {
-                                        count -= 10;
-                                    } else { count -= 100; }
+                                    if (total === 0) {
+                                        count = 0;
+                                    } else {
+                                        if (count - total < 20) {
+                                            count--;
+                                        } else if (count - total < 100) {
+                                            count -= 10;
+                                            // } else if (count - total < 1000) { count -= 100; 
+                                        } else {
+                                            count -= Math.floor((count - total) / 5);
+                                        }
+                                    }
                                 }
                                 totalValue.textContent = count;
+                                console.log(count);
                             } else {
                                 cancelAnimationFrame(interval);
                             }
@@ -341,9 +355,16 @@ window.addEventListener('DOMContentLoaded', function() {
                         interval = requestAnimationFrame(animatedTotalValue);
                     };
 
-                    target.addEventListener('keyup', debounce(wrapperAnimated, 1000));
+                    if (target.matches('input')) {
+                        target.addEventListener('keyup', debounce(wrapperAnimated, 1000));
+                    } else {
+                        wrapperAnimated();
+                    }
                 }
-            });
+            };
+
+            calcBlock.addEventListener('change', (event) => { animation(event); });
+            calcBlock.addEventListener('input', (event) => { animation(event); });
         };
 
         calc(100);
@@ -377,12 +398,14 @@ window.addEventListener('DOMContentLoaded', function() {
 
         body.addEventListener('input', (event) => {
             const target = event.target;
-            if (target.classList.contains('form-name') || target.classList.contains('mess')) {
-                target.value = target.value.replace(/[^а-яё\-\s]/gi, '');
+            if (target.classList.contains('form-name')) {
+                target.value = target.value.replace(/[^а-яё\s]/gi, '');
             } else if (target.classList.contains('form-email')) {
                 target.value = target.value.replace(/[^a-z@\-_.!~*']/gi, '');
             } else if (target.classList.contains('form-phone')) {
-                target.value = target.value.replace(/[^\d()-]/gi, '');
+                target.value = target.value.replace(/[^\d\+]/gi, '');
+            } else if (target.classList.contains('mess')) {
+                target.value = target.value.replace(/[^а-яё\s\d,.!?;:()]/gi, '');
             }
         });
 
@@ -404,11 +427,72 @@ window.addEventListener('DOMContentLoaded', function() {
 
                 if (target.classList.contains('form-name')) {
                     target.value = target.value.toLowerCase();
-                    target.value = target.value.replace(/(\s|^|-)[а-яё]/gi, (match) => match.toUpperCase());
+                    target.value = target.value.replace(/(\s|^)[а-яё]/gi, (match) => match.toUpperCase());
                 }
             }
         }, true);
     };
 
-    // validateForms();
+    validateForms();
+
+    // send-ajax-form
+    const sendForm = () => {
+        const errorMessage = 'Что-то пошло не так',
+            loadMessage = 'Загрузка...',
+            successMessage = 'Спасибо! Мы скоро с вами свяжемся!';
+
+        const formOne = document.getElementById('form1'),
+            formTwo = document.getElementById('form2'),
+            formThree = document.getElementById('form3');
+
+        const statusMessage = document.createElement('div');
+        statusMessage.style.cssText = 'font-size: 2rem; color: white;';
+
+        const postData = (body, outputData, errorData) => {
+            const request = new XMLHttpRequest();
+            request.addEventListener('readystatechange', () => {
+                if (request.readyState !== 4) { return; }
+                if (request.status === 200) {
+                    outputData();
+                } else {
+                    errorData(request.status);
+                }
+            });
+            request.open('POST', './server.php');
+            request.setRequestHeader('Content-type', 'application/json');
+
+            request.send(JSON.stringify(body));
+        };
+
+        const sendData = (event, form) => {
+            event.preventDefault();
+            form.appendChild(statusMessage);
+            statusMessage.textContent = loadMessage;
+            const formData = new FormData(form);
+            let body = {};
+            formData.forEach((val, key) => {
+                body[key] = val;
+            });
+            postData(body,
+                () => {
+                    statusMessage.textContent = successMessage;
+                },
+                (error) => {
+                    statusMessage.textContent = errorMessage;
+                    console.error(error);
+                });
+
+            const formInputs = form.querySelectorAll('input');
+            formInputs.forEach(item => item.value = '');
+        };
+
+        formOne.addEventListener('submit', (event) => { sendData(event, formOne); });
+        formTwo.addEventListener('submit', (event) => { sendData(event, formTwo); });
+        formThree.addEventListener('submit', (event) => { sendData(event, formThree); });
+
+    };
+
+    sendForm();
+
+
 });
