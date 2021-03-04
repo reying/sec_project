@@ -464,10 +464,37 @@ window.addEventListener('DOMContentLoaded', function() {
             request.send(JSON.stringify(body));
         };
 
+        const preloder = (parrent) => {
+            const preloaderWrap = document.createElement('div');
+            preloaderWrap.style.cssText = `
+                margin-left: auto;
+                margin-right: auto;
+                width: 70px;
+                height: 70px;
+                background: url(./images/preloader.png) center center no-repeat;`;
+            parrent.appendChild(preloaderWrap);
+        };
+
+        const outMessage = (parrent, mess) => {
+            const el = parrent.firstChild;
+
+            el.style.opacity = 1;
+            const interPreloader = setInterval(() => {
+                el.style.opacity = el.style.opacity - 0.05;
+                if (el.style.opacity <= 0.05) {
+                    clearInterval(interPreloader);
+                    el.style.display = "none";
+                    parrent.textContent = mess;
+                }
+            }, 30);
+        };
+
         const sendData = (event, form) => {
             event.preventDefault();
             form.appendChild(statusMessage);
-            statusMessage.textContent = loadMessage;
+            preloder(statusMessage);
+            // statusMessage.textContent = loadMessage;
+
             const formData = new FormData(form);
             let body = {};
             formData.forEach((val, key) => {
@@ -475,10 +502,12 @@ window.addEventListener('DOMContentLoaded', function() {
             });
             postData(body,
                 () => {
-                    statusMessage.textContent = successMessage;
+                    outMessage(statusMessage, successMessage);
+                    // statusMessage.textContent = successMessage;
                 },
                 (error) => {
-                    statusMessage.textContent = errorMessage;
+                    outMessage(statusMessage, errorMessage);
+                    // statusMessage.textContent = errorMessage;
                     console.error(error);
                 });
 
