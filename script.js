@@ -319,7 +319,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
                     const wrapperAnimated = () => {
                         cancelAnimationFrame(interval);
-                        // clearInterval(interval);
                         const animatedTotalValue = () => {
                             interval = requestAnimationFrame(animatedTotalValue);
                             if (count !== total) {
@@ -328,7 +327,6 @@ window.addEventListener('DOMContentLoaded', function() {
                                         count++;
                                     } else if (total - count < 100) {
                                         count += 10;
-                                        // } else if (total - count < 1000) { count += 100; 
                                     } else {
                                         count += Math.floor((total - count) / 5);
                                     }
@@ -340,7 +338,6 @@ window.addEventListener('DOMContentLoaded', function() {
                                             count--;
                                         } else if (count - total < 100) {
                                             count -= 10;
-                                            // } else if (count - total < 1000) { count -= 100; 
                                         } else {
                                             count -= Math.floor((count - total) / 5);
                                         }
@@ -465,6 +462,7 @@ window.addEventListener('DOMContentLoaded', function() {
         };
 
         const preloder = (parrent) => {
+            parrent.textContent = '';
             const preloaderWrap = document.createElement('div');
             preloaderWrap.style.cssText = `
                 margin-left: auto;
@@ -493,7 +491,6 @@ window.addEventListener('DOMContentLoaded', function() {
             event.preventDefault();
             form.appendChild(statusMessage);
             preloder(statusMessage);
-            // statusMessage.textContent = loadMessage;
 
             const formData = new FormData(form);
             let body = {};
@@ -503,11 +500,9 @@ window.addEventListener('DOMContentLoaded', function() {
             postData(body,
                 () => {
                     outMessage(statusMessage, successMessage);
-                    // statusMessage.textContent = successMessage;
                 },
                 (error) => {
                     outMessage(statusMessage, errorMessage);
-                    // statusMessage.textContent = errorMessage;
                     console.error(error);
                 });
 
@@ -518,7 +513,6 @@ window.addEventListener('DOMContentLoaded', function() {
         formOne.addEventListener('submit', (event) => { sendData(event, formOne); });
         formTwo.addEventListener('submit', (event) => { sendData(event, formTwo); });
         formThree.addEventListener('submit', (event) => { sendData(event, formThree); });
-
     };
 
     sendForm();
