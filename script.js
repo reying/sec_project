@@ -298,13 +298,14 @@ window.addEventListener('DOMContentLoaded', function() {
                 return total;
             };
 
-            calcBlock.addEventListener('input', (event) => {
-                const target = event.target;
-                if (target.matches('select') || target.matches('input')) {
-                    const total = countSum();
-                    let count = (totalValue.textContent) ? +totalValue.textContent : 0,
-                        interval;
+            let interval;
 
+            const animation = (event) => {
+                const target = event.target;
+                const total = countSum();
+                let count = (totalValue.textContent) ? +totalValue.textContent : 0;
+
+                if (target.matches('select') || target.matches('input')) {
                     const debounce = (f, t) => {
                         return function(args) {
                             let previousCall = this.lastCall;
@@ -317,6 +318,8 @@ window.addEventListener('DOMContentLoaded', function() {
                     };
 
                     const wrapperAnimated = () => {
+                        cancelAnimationFrame(interval);
+                        // clearInterval(interval);
                         const animatedTotalValue = () => {
                             interval = requestAnimationFrame(animatedTotalValue);
                             if (count !== total) {
@@ -325,13 +328,13 @@ window.addEventListener('DOMContentLoaded', function() {
                                         count++;
                                     } else if (total - count < 100) {
                                         count += 10;
-                                    } else { count += 100; }
+                                    } else if (total - count < 1000) { count += 100; } else { count += 1000; }
                                 } else {
                                     if (count - total < 20) {
                                         count--;
                                     } else if (count - total < 100) {
                                         count -= 10;
-                                    } else { count -= 100; }
+                                    } else if (count - total < 1000) { count -= 100; } else { count -= 1000; }
                                 }
                                 totalValue.textContent = count;
                             } else {
@@ -341,9 +344,16 @@ window.addEventListener('DOMContentLoaded', function() {
                         interval = requestAnimationFrame(animatedTotalValue);
                     };
 
-                    target.addEventListener('keyup', debounce(wrapperAnimated, 1000));
+                    if (target.matches('input')) {
+                        target.addEventListener('keyup', debounce(wrapperAnimated, 1000));
+                    } else {
+                        wrapperAnimated();
+                    }
                 }
-            });
+            };
+
+            calcBlock.addEventListener('change', (event) => { animation(event); });
+            calcBlock.addEventListener('input', (event) => { animation(event); });
         };
 
         calc(100);
