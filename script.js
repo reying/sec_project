@@ -447,34 +447,39 @@ window.addEventListener('DOMContentLoaded', function() {
         const statusMessage = document.createElement('div');
         statusMessage.style.cssText = 'font-size: 2rem;';
 
+        const postData = (body, outputData, errorData) => {
+            const request = new XMLHttpRequest();
+            request.addEventListener('readystatechange', () => {
+                if (request.readyState !== 4) { return; }
+                if (request.status === 200) {
+                    outputData();
+                } else {
+                    errorData(request.status);
+                }
+            });
+            request.open('POST', './server.php');
+            request.setRequestHeader('Content-type', 'application/json');
+
+            request.send(JSON.stringify(body));
+        };
+
         const sendData = (event, form) => {
             event.preventDefault();
             form.appendChild(statusMessage);
-
-            const request = new XMLHttpRequest();
-
-            request.addEventListener('readystatechange', () => {
-                statusMessage.textContent = loadMessage;
-
-                if (request.readyState !== 4) { return; }
-
-                if (request.status === 200) {
-                    statusMessage.textContent = successMessage;
-                } else {
-                    statusMessage.textContent = errorMessage;
-                }
-            });
-
-            request.open('POST', './server.php');
-            request.setRequestHeader('Content-type', 'application/json');
+            statusMessage.textContent = loadMessage;
             const formData = new FormData(form);
             let body = {};
-
             formData.forEach((val, key) => {
                 body[key] = val;
             });
-
-            request.send(JSON.stringify(body));
+            postData(body,
+                () => {
+                    statusMessage.textContent = successMessage;
+                },
+                (error) => {
+                    statusMessage.textContent = errorMessage;
+                    console.error(error);
+                });
         };
 
         formOne.addEventListener('submit', (event) => { sendData(event, formOne); });
