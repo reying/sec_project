@@ -107,7 +107,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
         popUp.addEventListener('click', (event) => {
             let target = event.target;
-            // if (target.classList.contains('popup-close') || target.classList.contains('form-btn'))
             if (target.classList.contains('popup-close')) {
                 popUp.style.display = 'none';
             } else {
@@ -393,12 +392,15 @@ window.addEventListener('DOMContentLoaded', function() {
     const validateForms = () => {
         const body = document.querySelector('body');
 
+        const formEmails = body.querySelectorAll('.form-email');
+        formEmails.forEach(elem => elem.required = true);
+
         body.addEventListener('input', (event) => {
             const target = event.target;
             if (target.classList.contains('form-name')) {
                 target.value = target.value.replace(/[^а-яё\s]/gi, '');
             } else if (target.classList.contains('form-email')) {
-                target.value = target.value.replace(/[^a-z@\-_.!~*']/gi, '');
+                target.value = target.value.replace(/[^a-z@\-_.']/gi, '');
             } else if (target.classList.contains('form-phone')) {
                 target.value = target.value.replace(/[^\d\+]/gi, '');
             } else if (target.classList.contains('mess')) {
@@ -435,7 +437,6 @@ window.addEventListener('DOMContentLoaded', function() {
     // send-ajax-form
     const sendForm = () => {
         const errorMessage = 'Что-то пошло не так',
-            loadMessage = 'Загрузка...',
             successMessage = 'Спасибо! Мы скоро с вами свяжемся!';
 
         const formOne = document.getElementById('form1'),
@@ -483,6 +484,11 @@ window.addEventListener('DOMContentLoaded', function() {
                     clearInterval(interPreloader);
                     el.style.display = "none";
                     parrent.textContent = mess;
+                    setTimeout(() => parrent.textContent = '', 3000);
+
+                    if (parrent.closest('.popup')) {
+                        setTimeout(() => parrent.closest('.popup').style.display = 'none', 3000);
+                    }
                 }
             }, 30);
         };
@@ -510,9 +516,113 @@ window.addEventListener('DOMContentLoaded', function() {
             formInputs.forEach(item => item.value = '');
         };
 
-        formOne.addEventListener('submit', (event) => { sendData(event, formOne); });
-        formTwo.addEventListener('submit', (event) => { sendData(event, formTwo); });
-        formThree.addEventListener('submit', (event) => { sendData(event, formThree); });
+        const validFormOne = new Validator({
+                selector: '#form1',
+                pattern: {
+                    name: /^[а-яё\s]{2,}$/gi,
+                    email: /^[\w.-]+@[\w]+\.[\w]{2,}$/gi,
+                    phone: /^(\+)?\d{7,13}$/gi
+                },
+                method: {
+                    'name': [
+                        ['notEmpty'],
+                        ['pattern', 'name']
+                    ],
+                    'email': [
+                        ['notEmpty'],
+                        ['pattern', 'email']
+                    ],
+                    'phone': [
+                        ['notEmpty'],
+                        ['pattern', 'phone']
+                    ]
+                }
+            }),
+            validFormTwo = new Validator({
+                selector: '#form2',
+                pattern: {
+                    name: /^[а-яё\s]{2,}$/gi,
+                    message: /^[а-яё\s]+$/gi,
+                    email: /^[\w.-]+@[\w]+\.[\w]{2,}$/gi,
+                    phone: /^(\+)?\d{7,13}$/gi
+                },
+                method: {
+                    'name': [
+                        ['notEmpty'],
+                        ['pattern', 'name']
+                    ],
+                    'message': [
+                        ['notEmpty'],
+                        ['pattern', 'message']
+                    ],
+                    'email': [
+                        ['notEmpty'],
+                        ['pattern', 'email']
+                    ],
+                    'phone': [
+                        ['notEmpty'],
+                        ['pattern', 'phone']
+                    ]
+                }
+            }),
+            validFormThree = new Validator({
+                selector: '#form3',
+                pattern: {
+                    name: /^[а-яё\s]{2,}$/gi,
+                    email: /^[\w.-]+@[\w]+\.[\w]{2,}$/gi,
+                    phone: /^(\+)?\d{7,13}$/gi
+                },
+                method: {
+                    'name': [
+                        ['notEmpty'],
+                        ['pattern', 'name']
+                    ],
+                    'email': [
+                        ['notEmpty'],
+                        ['pattern', 'email']
+                    ],
+                    'phone': [
+                        ['notEmpty'],
+                        ['pattern', 'phone']
+                    ]
+                }
+            });
+
+        validFormOne.init();
+        validFormTwo.init();
+        validFormThree.init();
+
+        formThree.addEventListener('input', (event) => {
+            const target = event.target;
+            if (target.tagName.toLowerCase() === 'input') {
+
+                console.log(validFormThree.error.size);
+                console.log(validFormThree.method);
+                console.log(validFormThree.elementsForm[0].value);
+            }
+        });
+
+        formTwo.addEventListener('input', (event) => {
+            const target = event.target;
+            if (target.tagName.toLowerCase() === 'input') {
+
+                console.log(validFormTwo.error.size);
+                console.log(validFormTwo.method);
+                console.log(validFormTwo.elementsForm[0].value);
+            }
+        });
+
+        formOne.addEventListener('submit', (event) => {
+            if (validFormTwo.error.size === 0) { sendData(event, formOne); }
+        });
+
+        formTwo.addEventListener('submit', (event) => {
+            if (validFormOne.error.size === 0) { sendData(event, formTwo); }
+        });
+
+        formThree.addEventListener('submit', (event) => {
+            if (validFormThree.error.size === 0) { sendData(event, formThree); }
+        });
     };
 
     sendForm();
