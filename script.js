@@ -108,7 +108,7 @@ window.addEventListener('DOMContentLoaded', function() {
         popUp.addEventListener('click', (event) => {
             let target = event.target;
             // if (target.classList.contains('popup-close') || target.classList.contains('form-btn'))
-            if (target.tagName === "BUTTON") {
+            if (target.classList.contains('popup-close')) {
                 popUp.style.display = 'none';
             } else {
                 target = target.closest('.popup-content');
@@ -319,7 +319,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
                     const wrapperAnimated = () => {
                         cancelAnimationFrame(interval);
-                        // clearInterval(interval);
                         const animatedTotalValue = () => {
                             interval = requestAnimationFrame(animatedTotalValue);
                             if (count !== total) {
@@ -328,7 +327,6 @@ window.addEventListener('DOMContentLoaded', function() {
                                         count++;
                                     } else if (total - count < 100) {
                                         count += 10;
-                                        // } else if (total - count < 1000) { count += 100; 
                                     } else {
                                         count += Math.floor((total - count) / 5);
                                     }
@@ -340,7 +338,6 @@ window.addEventListener('DOMContentLoaded', function() {
                                             count--;
                                         } else if (count - total < 100) {
                                             count -= 10;
-                                            // } else if (count - total < 1000) { count -= 100; 
                                         } else {
                                             count -= Math.floor((count - total) / 5);
                                         }
@@ -398,19 +395,20 @@ window.addEventListener('DOMContentLoaded', function() {
 
         body.addEventListener('input', (event) => {
             const target = event.target;
-            if (target.classList.contains('form-name') || target.classList.contains('mess')) {
-                target.value = target.value.replace(/[^а-яё\-\s]/gi, '');
+            if (target.classList.contains('form-name')) {
+                target.value = target.value.replace(/[^а-яё\s]/gi, '');
             } else if (target.classList.contains('form-email')) {
                 target.value = target.value.replace(/[^a-z@\-_.!~*']/gi, '');
             } else if (target.classList.contains('form-phone')) {
-                target.value = target.value.replace(/[^\d()-]/gi, '');
+                target.value = target.value.replace(/[^\d\+]/gi, '');
+            } else if (target.classList.contains('mess')) {
+                target.value = target.value.replace(/[^а-яё\s\d,.!?;:()]/gi, '');
             }
         });
 
         body.addEventListener('blur', (event) => {
             let target = event.target;
 
-            // написать ограничение для сработки
             if (target.closest('form')) {
                 const correctedValue = (target) => {
                     target.value = target.value.trim();
@@ -426,7 +424,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
                 if (target.classList.contains('form-name')) {
                     target.value = target.value.toLowerCase();
-                    target.value = target.value.replace(/(\s|^|-)[а-яё]/gi, (match) => match.toUpperCase());
+                    target.value = target.value.replace(/(\s|^)[а-яё]/gi, (match) => match.toUpperCase());
                 }
             }
         }, true);
@@ -445,7 +443,7 @@ window.addEventListener('DOMContentLoaded', function() {
             formThree = document.getElementById('form3');
 
         const statusMessage = document.createElement('div');
-        statusMessage.style.cssText = 'font-size: 2rem;';
+        statusMessage.style.cssText = 'font-size: 2rem; color: white;';
 
         const postData = (body, outputData, errorData) => {
             const request = new XMLHttpRequest();
@@ -463,10 +461,37 @@ window.addEventListener('DOMContentLoaded', function() {
             request.send(JSON.stringify(body));
         };
 
+        const preloder = (parrent) => {
+            parrent.textContent = '';
+            const preloaderWrap = document.createElement('div');
+            preloaderWrap.style.cssText = `
+                margin-left: auto;
+                margin-right: auto;
+                width: 70px;
+                height: 70px;
+                background: url(./images/preloader.png) center center no-repeat;`;
+            parrent.appendChild(preloaderWrap);
+        };
+
+        const outMessage = (parrent, mess) => {
+            const el = parrent.firstChild;
+
+            el.style.opacity = 1;
+            const interPreloader = setInterval(() => {
+                el.style.opacity = el.style.opacity - 0.05;
+                if (el.style.opacity <= 0.05) {
+                    clearInterval(interPreloader);
+                    el.style.display = "none";
+                    parrent.textContent = mess;
+                }
+            }, 30);
+        };
+
         const sendData = (event, form) => {
             event.preventDefault();
             form.appendChild(statusMessage);
-            statusMessage.textContent = loadMessage;
+            preloder(statusMessage);
+
             const formData = new FormData(form);
             let body = {};
             formData.forEach((val, key) => {
@@ -474,18 +499,20 @@ window.addEventListener('DOMContentLoaded', function() {
             });
             postData(body,
                 () => {
-                    statusMessage.textContent = successMessage;
+                    outMessage(statusMessage, successMessage);
                 },
                 (error) => {
-                    statusMessage.textContent = errorMessage;
+                    outMessage(statusMessage, errorMessage);
                     console.error(error);
                 });
+
+            const formInputs = form.querySelectorAll('input');
+            formInputs.forEach(item => item.value = '');
         };
 
         formOne.addEventListener('submit', (event) => { sendData(event, formOne); });
         formTwo.addEventListener('submit', (event) => { sendData(event, formTwo); });
         formThree.addEventListener('submit', (event) => { sendData(event, formThree); });
-
     };
 
     sendForm();
