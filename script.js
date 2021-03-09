@@ -32,7 +32,7 @@ window.addEventListener('DOMContentLoaded', function() {
         idInterval = setInterval(updateClock);
     };
 
-    countTimer('8 march 2021');
+    countTimer('11 march 2021');
 
     // scroll
     const scroll = (item, event) => {
@@ -446,20 +446,22 @@ window.addEventListener('DOMContentLoaded', function() {
         const statusMessage = document.createElement('div');
         statusMessage.style.cssText = 'font-size: 2rem; color: white;';
 
-        const postData = (body, outputData, errorData) => {
-            const request = new XMLHttpRequest();
-            request.addEventListener('readystatechange', () => {
-                if (request.readyState !== 4) { return; }
-                if (request.status === 200) {
-                    outputData();
-                } else {
-                    errorData(request.status);
-                }
-            });
-            request.open('POST', './server.php');
-            request.setRequestHeader('Content-type', 'application/json');
+        const postData = (body) => {
+            return new Promise((resolve, reject) => {
+                const request = new XMLHttpRequest();
+                request.addEventListener('readystatechange', () => {
+                    if (request.readyState !== 4) { return; }
+                    if (request.status === 200) {
+                        resolve();
+                    } else {
+                        reject();
+                    }
+                });
+                request.open('POST', './server.php');
+                request.setRequestHeader('Content-type', 'application/json');
 
-            request.send(JSON.stringify(body));
+                request.send(JSON.stringify(body));
+            });
         };
 
         const preloder = (parrent) => {
@@ -484,10 +486,10 @@ window.addEventListener('DOMContentLoaded', function() {
                     clearInterval(interPreloader);
                     el.style.display = "none";
                     parrent.textContent = mess;
-                    setTimeout(() => parrent.textContent = '', 3000);
+                    setTimeout(() => parrent.textContent = '', 2500);
 
                     if (parrent.closest('.popup')) {
-                        setTimeout(() => parrent.closest('.popup').style.display = 'none', 3000);
+                        setTimeout(() => parrent.closest('.popup').style.display = 'none', 5000);
                     }
                 }
             }, 30);
@@ -503,14 +505,16 @@ window.addEventListener('DOMContentLoaded', function() {
             formData.forEach((val, key) => {
                 body[key] = val;
             });
-            postData(body,
-                () => {
-                    outMessage(statusMessage, successMessage);
-                },
-                (error) => {
-                    outMessage(statusMessage, errorMessage);
-                    console.error(error);
-                });
+
+            postData(body)
+                .then(
+                    () => {
+                        outMessage(statusMessage, successMessage);
+                    },
+                    () => {
+                        outMessage(statusMessage, errorMessage);
+                    })
+                .catch(error => console.error(error));
 
             const formInputs = form.querySelectorAll('input');
             formInputs.forEach(item => item.value = '');
