@@ -1,7 +1,6 @@
 const slider = () => {
     const slider = document.querySelector('.portfolio-content'),
         slide = document.querySelectorAll('.portfolio-item'),
-        btns = document.querySelectorAll('.portfolio-btn'),
         portfolioDots = document.querySelector('.portfolio-dots');
 
     let currentSlide = 0,
@@ -9,9 +8,11 @@ const slider = () => {
 
     const addDots = () => {
         slide.forEach((elem, index) => {
-            let dot = document.createElement('li');
+            const dot = document.createElement('li');
             dot.classList.add('dot');
+
             if (index === 0) { dot.classList.add('dot-active'); }
+
             portfolioDots.append(dot);
         });
     };
@@ -23,16 +24,18 @@ const slider = () => {
     const prevSlide = (elem, index, strClass) => {
         elem[index].classList.remove(strClass);
     };
+
     const nextSlide = (elem, index, strClass) => {
         elem[index].classList.add(strClass);
     };
 
     const autoPlaySlide = () => {
-
         prevSlide(slide, currentSlide, 'portfolio-item-active');
         prevSlide(dots, currentSlide, 'dot-active');
+
         currentSlide++;
         if (currentSlide >= slide.length) { currentSlide = 0; }
+
         nextSlide(slide, currentSlide, 'portfolio-item-active');
         nextSlide(dots, currentSlide, 'dot-active');
     };
@@ -47,7 +50,7 @@ const slider = () => {
 
     slider.addEventListener('click', (event) => {
         event.preventDefault();
-        let target = event.target;
+        const target = event.target;
 
         if (!target.matches('.portfolio-btn, .dot')) { return; }
 
@@ -68,6 +71,7 @@ const slider = () => {
 
         if (currentSlide >= slide.length) { currentSlide = 0; }
         if (currentSlide < 0) { currentSlide = slide.length - 1; }
+
         nextSlide(slide, currentSlide, 'portfolio-item-active');
         nextSlide(dots, currentSlide, 'dot-active');
     });

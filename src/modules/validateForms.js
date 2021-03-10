@@ -1,7 +1,7 @@
 const validateForms = () => {
-    const body = document.querySelector('body');
+    const body = document.querySelector('body'),
+        formEmails = body.querySelectorAll('.form-email');
 
-    const formEmails = body.querySelectorAll('.form-email');
     formEmails.forEach(elem => elem.required = true);
 
     body.addEventListener('input', (event) => {
@@ -18,7 +18,7 @@ const validateForms = () => {
     });
 
     body.addEventListener('blur', (event) => {
-        let target = event.target;
+        const target = event.target;
 
         if (target.closest('form')) {
             const correctedValue = (target) => {

@@ -2,7 +2,7 @@ const calculator = () => {
     const calcBlock = document.querySelector('.calc-block');
 
     calcBlock.addEventListener('input', (event) => {
-        if (event.target.tagName === 'INPUT') {
+        if (event.target.tagName.toLowerCase === 'input') {
             event.target.value = event.target.value.replace(/\D/, '');
         }
     });
@@ -14,10 +14,13 @@ const calculator = () => {
             calcCount = document.querySelector('.calc-count'),
             totalValue = document.getElementById('total');
 
+        let interval;
+
         const countSum = () => {
             let total = 0,
                 countValue = 1,
                 dayValue = 1;
+
             const typeValue = calcType.options[calcType.selectedIndex].value,
                 squareValue = +calcSquare.value;
 
@@ -38,14 +41,13 @@ const calculator = () => {
             return total;
         };
 
-        let interval;
-
         const animation = (event) => {
-            const target = event.target;
-            const total = countSum();
+            const target = event.target,
+                total = countSum();
             let count = (totalValue.textContent) ? +totalValue.textContent : 0;
 
             if (target.matches('select') || target.matches('input')) {
+
                 const debounce = (f, t) => {
                     return function(args) {
                         let previousCall = this.lastCall;
@@ -59,14 +61,13 @@ const calculator = () => {
 
                 const wrapperAnimated = () => {
                     cancelAnimationFrame(interval);
+
                     const animatedTotalValue = () => {
                         interval = requestAnimationFrame(animatedTotalValue);
                         if (count !== total) {
                             if (count < total) {
                                 if (total - count < 20) {
                                     count++;
-                                } else if (total - count < 100) {
-                                    count += 10;
                                 } else {
                                     count += Math.floor((total - count) / 5);
                                 }
@@ -76,18 +77,19 @@ const calculator = () => {
                                 } else {
                                     if (count - total < 20) {
                                         count--;
-                                    } else if (count - total < 100) {
-                                        count -= 10;
                                     } else {
                                         count -= Math.floor((count - total) / 5);
                                     }
                                 }
                             }
+
                             totalValue.textContent = count;
+
                         } else {
                             cancelAnimationFrame(interval);
                         }
                     };
+
                     interval = requestAnimationFrame(animatedTotalValue);
                 };
 

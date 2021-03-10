@@ -17,6 +17,7 @@ const togglePopUp = () => {
                 clearInterval(idInterval);
             }
         };
+
         if (width >= 768) { idInterval = setInterval(ascent); }
     };
 

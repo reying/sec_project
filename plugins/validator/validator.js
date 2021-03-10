@@ -3,6 +3,7 @@ class Validator {
         this.form = document.querySelector(selector);
         this.pattern = pattern;
         this.method = method;
+
         this.elementsForm = [...this.form.elements].filter(item => {
             return item.tagName.toLowerCase() !== 'button' && item.type !== 'button';
         });
@@ -12,7 +13,12 @@ class Validator {
     init() {
         this.applyStyle();
         this.setPattern();
-        this.elementsForm.forEach(elem => elem.addEventListener('input', this.checkIt.bind(this)));
+
+        this.elementsForm.forEach(elem => {
+            elem.addEventListener('input', this.checkIt.bind(this));
+            elem.addEventListener('blur', this.checkIt.bind(this));
+        });
+
         this.form.addEventListener('submit', e => {
             this.elementsForm.forEach(elem => this.checkIt({ target: elem }));
             if (this.error.size) { e.preventDefault(); }
@@ -20,17 +26,17 @@ class Validator {
     }
 
     isValid(elem) {
+
         const validatorMethod = {
             notEmpty(elem) {
-                if (elem.value.trim() === '') {
-                    return false;
-                }
+                if (elem.value.trim() === '') { return false; }
                 return true;
             },
             pattern(elem, pattern) {
                 return pattern.test(elem.value);
             }
         };
+
         if (this.method) {
             const method = this.method[elem.id.split('-')[1]];
             if (method) {
@@ -56,10 +62,12 @@ class Validator {
 
     showError(elem) {
         if (elem.nextElementSibling && elem.nextElementSibling.classList.contains('validator-error')) { return; }
+
         const errorDiv = document.createElement('div');
         errorDiv.textContent = 'Ошибка в этом поле';
         errorDiv.classList.add('validator-error');
         elem.insertAdjacentElement('afterend', errorDiv);
+
         if (this.form.classList.contains('main-form') && window.innerWidth > 991) {
             errorDiv.style.marginTop = '-15px';
         }
@@ -82,9 +90,6 @@ class Validator {
         `;
         document.head.appendChild(style);
     }
-
-    // font-weight: 600;
-    // 
 
     setPattern() {
         if (!this.pattern.phone) {

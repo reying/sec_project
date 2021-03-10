@@ -21,6 +21,7 @@ const sendForm = () => {
 
     const preloder = (parrent) => {
         parrent.textContent = '';
+
         const preloaderWrap = document.createElement('div');
         preloaderWrap.style.cssText = `
             margin-left: auto;
@@ -33,8 +34,8 @@ const sendForm = () => {
 
     const outMessage = (parrent, mess) => {
         const el = parrent.firstChild;
-
         el.style.opacity = 1;
+
         const interPreloader = setInterval(() => {
             el.style.opacity = el.style.opacity - 0.05;
             if (el.style.opacity <= 0.05) {
@@ -52,6 +53,7 @@ const sendForm = () => {
 
     const sendData = (event, form) => {
         event.preventDefault();
+
         form.appendChild(statusMessage);
         preloder(statusMessage);
 
@@ -62,13 +64,12 @@ const sendForm = () => {
         });
 
         postData(body)
-            .then(
-                (response) => {
-                    if (response.status !== 200) {
-                        throw new Error('status network not 200');
-                    }
-                    outMessage(statusMessage, successMessage);
-                })
+            .then(response => {
+                if (response.status !== 200) {
+                    throw new Error('status network not 200');
+                }
+                outMessage(statusMessage, successMessage);
+            })
             .catch(error => {
                 outMessage(statusMessage, errorMessage);
                 console.error(error);

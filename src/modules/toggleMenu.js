@@ -10,6 +10,7 @@ const toggleMenu = () => {
 
     const scroll = (item, event) => {
         event.preventDefault();
+
         const idBlock = item.getAttribute('href').substring(1),
             block = document.getElementById(idBlock);
 
@@ -17,14 +18,14 @@ const toggleMenu = () => {
     };
 
     body.addEventListener('click', (event) => {
-        let target = event.target;
+        const target = event.target;
 
         if (target.closest('.menu')) {
             handlerMenu();
         } else {
             if (target.closest('menu')) {
                 menuItems.forEach((item) => {
-                    if (item === event.target) {
+                    if (item === target) {
                         if (item.getAttribute('href').substring(1) !== 'close') {
                             handlerMenu();
                             scroll(item, event);
