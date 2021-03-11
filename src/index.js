@@ -12,7 +12,7 @@ import validateForms from './modules/validateForms';
 import sendForm from './modules/sendForm';
 
 // Таймер
-countTimer('11 march 2021');
+countTimer('15 march 2021');
 // Меню
 toggleMenu();
 // popUp

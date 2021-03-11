@@ -105,7 +105,7 @@ const sendForm = () => {
             selector: '#form2',
             pattern: {
                 name: /^[а-яё\s]{2,}$/gi,
-                message: /^[а-яё\s]+$/gi,
+                message: /^[а-яё\s\d,.!?;:]+$/gi,
                 email: /^[\w.-]+@[\w]+\.[\w]{2,}$/gi,
                 phone: /^(\+)?\d{7,13}$/gi
             },
