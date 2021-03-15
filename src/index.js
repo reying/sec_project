@@ -1,5 +1,26 @@
 'use strict';
 
+const carousel = new SliderCarousel({
+    main: '.companies-wrapper',
+    wrap: '.companies-hor',
+    slidesToShow: 4,
+    infinity: true,
+    responsive: [{
+            breakpoint: 1024,
+            slidesToShow: 3
+        },
+        {
+            breakpoint: 768,
+            slidesToShow: 2
+        },
+        {
+            breakpoint: 576,
+            slidesToShow: 1
+        }
+    ]
+});
+carousel.init();
+
 import countTimer from './modules/countTimer';
 import toggleMenu from './modules/toggleMenu';
 import togglePopUp from './modules/togglePopUp';
@@ -12,7 +33,7 @@ import validateForms from './modules/validateForms';
 import sendForm from './modules/sendForm';
 
 // Таймер
-countTimer('15 march 2021');
+countTimer('19 march 2021');
 // Меню
 toggleMenu();
 // popUp
