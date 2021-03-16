@@ -56,7 +56,7 @@ class SliderCarousel {
         let style = document.getElementById('sliderCarousel-style');
 
         if (!style) {
-            style = document.querySelector('style');
+            style = document.createElement('style');
             style.id = 'sliderCarousel-style';
         }
 
